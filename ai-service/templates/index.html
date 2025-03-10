@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Meal Plan Generator</title>
+</head>
+<body>
+  <h1>Meal Plan Generator</h1>
+  <form id="meal-form">
+    <label for="favorite_cuisines">Favorite Cuisines (comma separated):</label><br>
+    <input type="text" id="favorite_cuisines" name="favorite_cuisines"><br>
+
+    <label for="liked_dishes">Liked Dishes (comma separated):</label><br>
+    <input type="text" id="liked_dishes" name="liked_dishes"><br>
+
+    <label for="disliked_dishes">Disliked Dishes (comma separated):</label><br>
+    <input type="text" id="disliked_dishes" name="disliked_dishes"><br>
+
+    <label for="dietary_restrictions">Dietary Restrictions (comma separated):</label><br>
+    <input type="text" id="dietary_restrictions" name="dietary_restrictions"><br>
+
+    <label for="query">Query:</label><br>
+    <input type="text" id="query" name="query"><br><br>
+
+    <input type="submit" value="Generate Meal Plan">
+  </form>
+
+  <h2>Result:</h2>
+  <pre id="result"></pre>
+
+  <script>
+    document.getElementById("meal-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const favorite_cuisines = document.getElementById("favorite_cuisines").value.split(',').map(s => s.trim()).filter(Boolean);
+      const liked_dishes = document.getElementById("liked_dishes").value.split(',').map(s => s.trim()).filter(Boolean);
+      const disliked_dishes = document.getElementById("disliked_dishes").value.split(',').map(s => s.trim()).filter(Boolean);
+      const dietary_restrictions = document.getElementById("dietary_restrictions").value.split(',').map(s => s.trim()).filter(Boolean);
+      const query = document.getElementById("query").value;
+
+      const data = {
+        preferences: {
+          favorite_cuisines: favorite_cuisines,
+          liked_dishes: liked_dishes,
+          disliked_dishes: disliked_dishes,
+          dietary_restrictions: dietary_restrictions
+        },
+        query: query
+      };
+
+      fetch("http://localhost:5001/generate-meal-plan", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(result => {
+        document.getElementById("result").textContent = JSON.stringify(result, null, 2);
+      })
+      .catch(error => {
+        document.getElementById("result").textContent = "Error: " + error;
+      });
+    });
+  </script>
+</body>
+</html>
