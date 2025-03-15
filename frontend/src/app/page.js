@@ -1,19 +1,25 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter(); // Initialize router
 
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Email:", email);
     console.log("Password:", password);
     alert("Login button clicked!");
+
+    // Redirect to food logging page
+    router.push("/log-food");
   };
 
   const handleGoogleSignIn = () => {
     console.log("Google Sign-In Clicked");
+    // Implement Google sign-in logic later
   };
 
   return (
@@ -24,13 +30,11 @@ export default function Login() {
       {/* Navigation Bar */}
       <nav className="relative z-10 bg-white bg-opacity-70 backdrop-blur-md shadow py-4 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          {/* Existing Logo */}
           <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-md shadow-md flex items-center justify-center">
             <span className="text-white font-bold">S</span>
           </div>
           <h1 className="text-2xl font-bold text-blue-700">SmartMeal</h1>
         </div>
-        {/* Eye-catching slogan */}
         <p className="hidden md:block text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600 font-semibold text-lg drop-shadow">
           Smarter, Healthier Meals. Effortlessly.
         </p>
