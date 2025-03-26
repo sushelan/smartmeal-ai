@@ -1,29 +1,33 @@
-import api from './axiosInstance';
+import axios from "axios";
 
-// Local Login
+const api = axios.create({
+  baseURL: "http://localhost:5001/api", // Must match your backend URL
+  timeout: 10000,
+  withCredentials: true,
+});
+
 export const login = async (email, password) => {
   try {
     const response = await api.post('/auth/login', { email, password });
-    // On success, you'll get the login response containing user info and token (if applicable)
     return response.data;
   } catch (error) {
-    // You could parse error.response.data if needed
     throw error;
   }
 };
 
-// Google OAuth Start
-// Since this endpoint redirects the user to Google, you don't use Axios to call it.
-// Instead, simply redirect the browser:
+export const signup = async ({ name, email, password }) => {
+  try {
+    const response = await api.post('/auth/signup', { name, email, password });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const startGoogleOAuth = () => {
   window.location.href = `${api.defaults.baseURL}/auth/google`;
 };
 
-// Google OAuth Callback
-// Typically, the backend handles this callback and redirects the user.
-// You may not need an Axios call here unless you want to validate something on the frontend.
-
-// Logout
 export const logout = async () => {
   try {
     const response = await api.post('/auth/logout');
@@ -33,7 +37,6 @@ export const logout = async () => {
   }
 };
 
-// Get Current User
 export const getCurrentUser = async () => {
   try {
     const response = await api.get('/auth/me');
@@ -42,3 +45,5 @@ export const getCurrentUser = async () => {
     throw error;
   }
 };
+
+export default api;

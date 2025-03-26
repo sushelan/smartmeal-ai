@@ -1,25 +1,29 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
+import { login, startGoogleOAuth } from "../../services/authApi"; // Check this relative path
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    alert("Login button clicked!");
-
-    // Redirect to food logging page
-    router.push("/log-food");
+    try {
+      const response = await login(email, password);
+      console.log("Login successful:", response);
+      // Redirect to food logging page after successful login
+      router.push("/food-logging");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Login failed. Please check your credentials and try again.");
+    }
   };
 
   const handleGoogleSignIn = () => {
     console.log("Google Sign-In Clicked");
-    // Implement Google sign-in logic later
+    startGoogleOAuth();
   };
 
   return (
