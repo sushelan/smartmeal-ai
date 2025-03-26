@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import api from "../../../services/authApi"; // Adjust path if needed
+import api from "../../../services/authApi";
 
 export default function FoodLoggingPage() {
   const [foodItem, setFoodItem] = useState("");
@@ -10,7 +10,7 @@ export default function FoodLoggingPage() {
   useEffect(() => {
     const fetchFoodLogs = async () => {
       try {
-        const res = await api.get("foodlogs"); // Use leading slash
+        const res = await api.get("foodlogs"); 
         setFoodLogs(res.data.logs);
       } catch (error) {
         console.error("Error fetching food logs:", error);
@@ -25,7 +25,7 @@ export default function FoodLoggingPage() {
     e.preventDefault();
     if (!foodItem.trim()) return;
     try {
-      const res = await api.post("/foodlogs", { item: foodItem }); // Use leading slash
+      const res = await api.post("/foodlogs", { item: foodItem }); 
       setFoodLogs((prev) => [...prev, res.data.log]);
       setFoodItem("");
     } catch (error) {
@@ -36,7 +36,7 @@ export default function FoodLoggingPage() {
   // Delete a food log by ID
   const handleDeleteFood = async (id) => {
     try {
-      await api.delete(`foodlogs/${id}`); // Use leading slash
+      await api.delete(`foodlogs/${id}`);
       setFoodLogs((prev) => prev.filter((log) => log.id !== id));
     } catch (error) {
       console.error("Error deleting food log:", error);
