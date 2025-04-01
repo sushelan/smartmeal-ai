@@ -6,6 +6,11 @@ export default function FoodLoggingPage() {
   const [foodItem, setFoodItem] = useState("");
   const [foodLogs, setFoodLogs] = useState([]);
 
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   // Fetch food logs from the backend when the component mounts
   useEffect(() => {
     const fetchFoodLogs = async () => {
@@ -68,9 +73,11 @@ export default function FoodLoggingPage() {
               <li key={log.id} className="flex justify-between items-center p-2 border-b">
                 <span>
                   {log.item}{" "}
+                  { hasMounted && (
                   <em className="text-sm text-gray-500">
                     ({new Date(log.timestamp).toLocaleString()})
                   </em>
+                  )}
                 </span>
                 <button onClick={() => handleDeleteFood(log.id)} className="text-red-500 hover:text-red-700">
                   Delete
