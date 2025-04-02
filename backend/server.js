@@ -173,8 +173,8 @@ app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile',
 app.get('/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    // Successful authentication, redirect to the food logging page.
-    res.redirect('http://localhost:3000/food-logging');
+    // Successful authentication, redirect to the log food page.
+    res.redirect('http://localhost:3000/log-food');
   }
 );
 
