@@ -13,4 +13,18 @@ CREATE TABLE IF NOT EXISTS foodlogs (
     timestamp TIMESTAMPTZ DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS user_favorite_ingredients (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  ingredient TEXT NOT NULL,
+  date_added TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS user_favorite_dishes (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  dish TEXT NOT NULL,
+  date_added TIMESTAMPTZ DEFAULT NOW()
+);
+
 /* psql -U postgres -h localhost -d mealplan -f db/init.sql */

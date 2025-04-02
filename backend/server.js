@@ -253,7 +253,97 @@ app.delete('/api/foodlogs/:id', ensureAuthenticated, async (req, res) => {
   }
 });
 
+app.post('/api/favorites/ingredients', ensureAuthenticated, async (req, res) => {
+  const { ingredient } = req.body;
+  if (!ingredient) {
+    return res.status(400).json({ success: false, message: 'Ingredient is required' });
+  }
+  try {
+    const result = await pool.query(
+      'INSERT INTO user_favorite_ingredients (user_id, ingredient) VALUES ($1, $2) RETURNING *',
+      [req.user.id, ingredient]
+    );
+    res.status(201).json({ success: true, favorite: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error adding favorite ingredient', error: error.message });
+  }
+});
+
+app.post('/api/favorites/dishes', ensureAuthenticated, async (req, res) => {
+  const { dish } = req.body;
+  if (!dish) {
+    return res.status(400).json({ success: false, message: 'Dish is required' });
+  }
+  try {
+    const result = await pool.query(
+      'INSERT INTO user_favorite_dishes (user_id, dish) VALUES ($1, $2) RETURNING *',
+      [req.user.id, dish]
+    );
+    res.status(201).json({ success: true, favorite: result.rows[0] });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error adding favorite dish', error: error.message });
+  }
+});
+
+app.get('/api/favorites/ingredients', ensureAuthenticated, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM user_favorite_ingredients WHERE user_id = $1 ORDER BY date_added ASC',
+      [req.user.id]
+    );
+    res.json({ favorites: result.rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching favorite ingredients', error: error.message });
+  }
+});
+
+app.get('/api/favorites/dishes', ensureAuthenticated, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM user_favorite_dishes WHERE user_id = $1 ORDER BY date_added ASC',
+      [req.user.id]
+    );
+    res.json({ favorites: result.rows });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching favorite dishes', error: error.message });
+  }
+});
+
+app.delete('/api/favorites/ingredients/:id', ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'DELETE FROM user_favorite_ingredients WHERE id = $1 AND user_id = $2 RETURNING *',
+      [id, req.user.id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Favorite ingredient not found' });
+    }
+    res.json({ success: true, message: 'Favorite ingredient deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error deleting favorite ingredient', error: error.message });
+  }
+});
+
+app.delete('/api/favorites/dishes/:id', ensureAuthenticated, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query(
+      'DELETE FROM user_favorite_dishes WHERE id = $1 AND user_id = $2 RETURNING *',
+      [id, req.user.id]
+    );
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Favorite dish not found' });
+    }
+    res.json({ success: true, message: 'Favorite dish deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error deleting favorite dish', error: error.message });
+  }
+});
+
 // Start the backend server
 app.listen(PORT, () => {
   console.log(`Backend server listening on port ${PORT}`);
 });
+
+module.exports = app;
