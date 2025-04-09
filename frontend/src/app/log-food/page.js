@@ -33,6 +33,7 @@ export default function LogFood() {
     if (!ingredient.trim()) return;
     try {
       const res = await api.post("/foodlogs", {
+        // Store as a string that may include the amount if provided
         item: amount.trim() ? `${ingredient} - ${amount}` : ingredient,
       });
       setIngredientsList((prev) => [...prev, res.data.log]);
@@ -52,7 +53,13 @@ export default function LogFood() {
     }
   };
 
+  // Fix: Extract ingredient names, save them in localStorage, then navigate.
   const goToRecipes = () => {
+    const ingredientNames = ingredientsList.map((log) => {
+      // Assume the format is "ingredient - amount"; split and take first part.
+      return log.item.split(" - ")[0].trim();
+    });
+    localStorage.setItem("ingredients", JSON.stringify(ingredientNames));
     router.push("/recipe-browsing");
   };
 
