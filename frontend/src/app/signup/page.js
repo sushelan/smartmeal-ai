@@ -19,7 +19,7 @@ export default function SignupPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        window.location.href = "/food-logging";
+        window.location.href = "/log-food";
       } else {
         alert(data.message || "Signup failed.");
       }
