@@ -53,7 +53,7 @@ export default function LogFood() {
   };
 
   const goToRecipes = () => {
-    router.push("/recipes");
+    router.push("/recipe-browsing");
   };
 
   return (
