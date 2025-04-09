@@ -10,7 +10,7 @@ export default function RecipesPage() {
   useEffect(() => {
     async function fetchRecipes() {
       try {
-        // Retrieve ingredients from localStorage.
+        
         const saved = localStorage.getItem("ingredients");
         const ingredients = saved ? JSON.parse(saved) : [];
 
@@ -20,7 +20,7 @@ export default function RecipesPage() {
           return;
         }
 
-        // Build a query string for the filter endpoint.
+        
         const query = ingredients.join(",");
         const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`);
         if (!res.ok) {
@@ -28,7 +28,7 @@ export default function RecipesPage() {
         }
         const data = await res.json();
 
-        // Fix: Check if meals were found.
+        
         if (!data.meals) {
           setError("No recipes found for the given ingredients.");
           setRecipes([]);
