@@ -10,13 +10,31 @@ export default function RecipesPage() {
   useEffect(() => {
     async function fetchRecipes() {
       try {
-        // TheMealDB free API: returns recipes matching the empty string search.
-        const res = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=");
+        
+        const saved = localStorage.getItem("ingredients");
+        const ingredients = saved ? JSON.parse(saved) : [];
+
+        if (ingredients.length === 0) {
+          setError("No ingredients found. Please log your ingredients.");
+          setLoading(false);
+          return;
+        }
+
+        
+        const query = ingredients.join(",");
+        const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`);
         if (!res.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await res.json();
-        setRecipes(data.meals || []);
+
+        
+        if (!data.meals) {
+          setError("No recipes found for the given ingredients.");
+          setRecipes([]);
+        } else {
+          setRecipes(data.meals);
+        }
       } catch (err) {
         console.error("Failed to fetch recipes", err);
         setError("Failed to load recipes. Please try again later.");
@@ -72,14 +90,8 @@ export default function RecipesPage() {
             />
             <div className="p-4">
               <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
-              <p className="text-gray-600">
-                {recipe.strArea} - {recipe.strCategory}
-              </p>
-              {recipe.strInstructions && (
-                <p className="text-gray-500 mt-2 line-clamp-3">
-                  {recipe.strInstructions}
-                </p>
-              )}
+              {/* For the filter endpoint, limited details are returned.
+                  Consider a secondary lookup using recipe.idMeal if needed. */}
             </div>
           </div>
         ))}

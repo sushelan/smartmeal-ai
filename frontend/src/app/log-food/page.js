@@ -53,6 +53,10 @@ export default function LogFood() {
   };
 
   const goToRecipes = () => {
+    const ingredientNames = ingredientsList.map((log) => {
+      return log.item.split(" - ")[0].trim();
+    });
+    localStorage.setItem("ingredients", JSON.stringify(ingredientNames));
     router.push("/recipe-browsing");
   };
 
