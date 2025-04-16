@@ -10,30 +10,44 @@ export default function RecipesPage() {
   useEffect(() => {
     async function fetchRecipes() {
       try {
-        
         const saved = localStorage.getItem("ingredients");
         const ingredients = saved ? JSON.parse(saved) : [];
-
+    
         if (ingredients.length === 0) {
           setError("No ingredients found. Please log your ingredients.");
           setLoading(false);
           return;
         }
-
-        
-        const query = ingredients.join(",");
-        const res = await fetch(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${query}`);
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
+    
+        // 1) fetch each ingredient’s meals
+        const lists = await Promise.all(
+          ingredients.map((ing) =>
+            fetch(
+              `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(
+                ing.trim()
+              )}`
+            )
+              .then((r) => {
+                if (!r.ok) throw new Error(`Failed fetch for ${ing}`);
+                return r.json();
+              })
+              .then((data) => data.meals || [])
+          )
+        );
+    
+        // 2) intersect by idMeal
+        let intersection = lists[0];
+        for (let i = 1; i < lists.length; i++) {
+          const ids = new Set(lists[i].map((m) => m.idMeal));
+          intersection = intersection.filter((m) => ids.has(m.idMeal));
         }
-        const data = await res.json();
-
-        
-        if (!data.meals) {
+    
+        // 3) set state
+        if (intersection.length === 0) {
           setError("No recipes found for the given ingredients.");
           setRecipes([]);
         } else {
-          setRecipes(data.meals);
+          setRecipes(intersection);
         }
       } catch (err) {
         console.error("Failed to fetch recipes", err);
@@ -42,6 +56,7 @@ export default function RecipesPage() {
         setLoading(false);
       }
     }
+    
     fetchRecipes();
   }, []);
 
