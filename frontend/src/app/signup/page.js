@@ -33,31 +33,49 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-50">
       <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Create Account</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="name"
-            type="text"
-            placeholder="Name"
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400"
-          />
-          <input
-            name="email"
-            type="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400"
-          />
-          <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400"
-          />
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+          <div>
+            <label htmlFor="name" className="block mb-1 text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <input
+              name="name"
+              type="text"
+              id="name"
+              placeholder="Enter your name"
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400 text-black"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="block mb-1 text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              name="email"
+              type="email"
+              id="email"
+              placeholder="Enter your email"
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400 text-black"
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className="block mb-1 text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              name="password"
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded focus:outline-blue-400 text-black"
+            />
+          </div>
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white py-3 rounded font-semibold hover:opacity-90 transition"
