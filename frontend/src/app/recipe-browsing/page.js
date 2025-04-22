@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState([]);
@@ -10,11 +11,10 @@ export default function RecipesPage() {
   useEffect(() => {
     async function fetchRecipes() {
       try {
-        // TheMealDB free API: returns recipes matching the empty string search.
-        const res = await fetch("https://www.themealdb.com/api/json/v1/1/search.php?s=");
-        if (!res.ok) {
-          throw new Error("Network response was not ok");
-        }
+        const res = await fetch(
+          "https://www.themealdb.com/api/json/v1/1/search.php?s="
+        );
+        if (!res.ok) throw new Error("Network response was not ok");
         const data = await res.json();
         setRecipes(data.meals || []);
       } catch (err) {
@@ -30,7 +30,9 @@ export default function RecipesPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200">
-        <h1 className="text-2xl font-bold text-blue-700">Loading recipes...</h1>
+        <h1 className="text-2xl font-bold text-blue-700">
+          Loading recipes...
+        </h1>
       </div>
     );
   }
@@ -56,32 +58,37 @@ export default function RecipesPage() {
       </nav>
 
       {/* Page Title */}
-      <h2 className="text-3xl font-bold text-blue-700 text-center mt-8 mb-4">Browse Recipes</h2>
+      <h2 className="text-3xl font-bold text-blue-700 text-center mt-8 mb-4">
+        Browse Recipes
+      </h2>
 
       {/* Recipes Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {recipes.map((recipe) => (
-          <div
-            key={recipe.idMeal}
-            className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden"
-          >
-            <img
-              src={recipe.strMealThumb}
-              alt={recipe.strMeal}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
-              <p className="text-gray-600">
-                {recipe.strArea} - {recipe.strCategory}
-              </p>
-              {recipe.strInstructions && (
-                <p className="text-gray-500 mt-2 line-clamp-3">
-                  {recipe.strInstructions}
-                </p>
-              )}
-            </div>
-          </div>
+          <Link key={recipe.idMeal} href={`/recipe-browsing/${recipe.idMeal}`}>
+            <a className="block hover:scale-105 transition-transform">
+              <div className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden">
+                <img
+                  src={recipe.strMealThumb}
+                  alt={recipe.strMeal}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-blue-700">
+                    {recipe.strMeal}
+                  </h3>
+                  <p className="text-gray-600">
+                    {recipe.strArea} - {recipe.strCategory}
+                  </p>
+                  {recipe.strInstructions && (
+                    <p className="text-gray-500 mt-2 line-clamp-3">
+                      {recipe.strInstructions}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </a>
+          </Link>
         ))}
       </div>
 
