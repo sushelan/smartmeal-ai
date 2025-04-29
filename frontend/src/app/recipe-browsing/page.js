@@ -7,25 +7,34 @@ export default function RecipesPage() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  async function fetchRecipes(query = "") {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+      if (!res.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await res.json();
+      setRecipes(data.meals || []);
+    } catch (err) {
+      console.error("Failed to fetch recipes", err);
+      setError("Failed to load recipes. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchRecipes() {
-      try {
-        const res = await fetch(
-          "https://www.themealdb.com/api/json/v1/1/search.php?s="
-        );
-        if (!res.ok) throw new Error("Network response was not ok");
-        const data = await res.json();
-        setRecipes(data.meals || []);
-      } catch (err) {
-        console.error("Failed to fetch recipes", err);
-        setError("Failed to load recipes. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchRecipes();
   }, []);
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault();
+    fetchRecipes(searchTerm);
+  }
 
   if (loading) {
     return (
@@ -62,11 +71,28 @@ export default function RecipesPage() {
         Browse Recipes
       </h2>
 
+      {/* Search Bar */}
+      <form onSubmit={handleSearch} className="flex justify-center mb-8">
+        <input
+          type="text"
+          placeholder="Search for a recipe..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-3 rounded-l-md w-64 border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="px-4 py-3 bg-blue-500 text-white font-semibold rounded-r-md hover:bg-blue-600 transition"
+        >
+          Search
+        </button>
+      </form>
+
       {/* Recipes Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {recipes.map((recipe) => (
-          <Link key={recipe.idMeal} href={`/recipe-browsing/${recipe.idMeal}`}>
-            <a className="block hover:scale-105 transition-transform">
+        {recipes.length > 0 ? (
+          recipes.map((recipe) => (
+            <Link key={recipe.idMeal} href={`/recipe-browsing/${recipe.idMeal}`} className="block hover:scale-105 transition-transform">
               <div className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden">
                 <img
                   src={recipe.strMealThumb}
@@ -74,22 +100,18 @@ export default function RecipesPage() {
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
-                  <h3 className="text-xl font-semibold text-blue-700">
-                    {recipe.strMeal}
-                  </h3>
-                  <p className="text-gray-600">
-                    {recipe.strArea} - {recipe.strCategory}
-                  </p>
+                  <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
+                  <p className="text-gray-600">{recipe.strArea} - {recipe.strCategory}</p>
                   {recipe.strInstructions && (
-                    <p className="text-gray-500 mt-2 line-clamp-3">
-                      {recipe.strInstructions}
-                    </p>
+                    <p className="text-gray-500 mt-2 line-clamp-3">{recipe.strInstructions}</p>
                   )}
                 </div>
               </div>
-            </a>
-          </Link>
-        ))}
+            </Link>
+          ))
+        ) : (
+          <p className="text-center text-gray-600 col-span-full">No recipes found.</p>
+        )}
       </div>
 
       {/* Footer */}

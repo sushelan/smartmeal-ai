@@ -14,7 +14,7 @@ export default function Login() {
       const response = await login(email, password);
       console.log("Login successful:", response);
       // Redirect to food logging page after successful login
-      router.push("/food-logging");
+      router.push("/log-food");
     } catch (error) {
       console.error("Login error:", error);
       alert("Login failed. Please check your credentials and try again.");
