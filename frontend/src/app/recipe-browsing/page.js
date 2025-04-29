@@ -9,29 +9,85 @@ export default function RecipesPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Search by keyword
   async function fetchRecipes(query = "") {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
-      if (!res.ok) {
-        throw new Error("Network response was not ok");
-      }
+      const res = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
+          query
+        )}`
+      );
+      if (!res.ok) throw new Error("Network response was not ok");
       const data = await res.json();
       setRecipes(data.meals || []);
     } catch (err) {
       console.error("Failed to fetch recipes", err);
       setError("Failed to load recipes. Please try again later.");
+      setRecipes([]);
     } finally {
       setLoading(false);
     }
   }
 
+  // Suggestions based on logged ingredients
+  async function fetchByIngredients() {
+    setLoading(true);
+    setError(null);
+    try {
+      const saved = localStorage.getItem("ingredients");
+      const ingredients = saved ? JSON.parse(saved) : [];
+
+      if (!ingredients.length) {
+        setError("No ingredients found. Please log your ingredients.");
+        setRecipes([]);
+        return;
+      }
+
+      const lists = await Promise.all(
+        ingredients.map((ing) =>
+          fetch(
+            `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(
+              ing.trim()
+            )}`
+          )
+            .then((r) => {
+              if (!r.ok) throw new Error(`Failed fetch for ${ing}`);
+              return r.json();
+            })
+            .then((data) => data.meals || [])
+        )
+      );
+
+      let intersection = lists[0];
+      for (let i = 1; i < lists.length; i++) {
+        const ids = new Set(lists[i].map((m) => m.idMeal));
+        intersection = intersection.filter((m) => ids.has(m.idMeal));
+      }
+
+      if (!intersection.length) {
+        setError("No recipes found for the given ingredients.");
+        setRecipes([]);
+      } else {
+        setRecipes(intersection);
+      }
+    } catch (err) {
+      console.error("Failed to fetch recipes", err);
+      setError("Failed to load recipes. Please try again later.");
+      setRecipes([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // On mount, load suggestions
   useEffect(() => {
-    fetchRecipes();
+    fetchByIngredients();
   }, []);
 
-  function handleSearch(e: React.FormEvent) {
+  // Handle search submissions
+  function handleSearch(e) {
     e.preventDefault();
     fetchRecipes(searchTerm);
   }
@@ -92,7 +148,11 @@ export default function RecipesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {recipes.length > 0 ? (
           recipes.map((recipe) => (
-            <Link key={recipe.idMeal} href={`/recipe-browsing/${recipe.idMeal}`} className="block hover:scale-105 transition-transform">
+            <Link
+              key={recipe.idMeal}
+              href={`/recipe/${recipe.idMeal}`}
+              className="block hover:scale-105 transition-transform"
+            >
               <div className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden">
                 <img
                   src={recipe.strMealThumb}
@@ -100,17 +160,27 @@ export default function RecipesPage() {
                   className="w-full h-48 object-cover"
                 />
                 <div className="p-4">
-                  <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
-                  <p className="text-gray-600">{recipe.strArea} - {recipe.strCategory}</p>
+                  <h3 className="text-xl font-semibold text-blue-700">
+                    {recipe.strMeal}
+                  </h3>
+                  {recipe.strArea && recipe.strCategory && (
+                    <p className="text-gray-600">
+                      {recipe.strArea} - {recipe.strCategory}
+                    </p>
+                  )}
                   {recipe.strInstructions && (
-                    <p className="text-gray-500 mt-2 line-clamp-3">{recipe.strInstructions}</p>
+                    <p className="text-gray-500 mt-2 line-clamp-3">
+                      {recipe.strInstructions}
+                    </p>
                   )}
                 </div>
               </div>
             </Link>
           ))
         ) : (
-          <p className="text-center text-gray-600 col-span-full">No recipes found.</p>
+          <p className="text-center text-gray-600 col-span-full">
+            No recipes found.
+          </p>
         )}
       </div>
 
