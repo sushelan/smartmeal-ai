@@ -173,8 +173,8 @@ app.get('/api/auth/google', passport.authenticate('google', { scope: ['profile',
 app.get('/api/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-    // Successful authentication, redirect to the food logging page.
-    res.redirect('http://localhost:3000/food-logging');
+    // Successful authentication, redirect to the log food page.
+    res.redirect('http://localhost:3000/log-food');
   }
 );
 
@@ -339,6 +339,24 @@ app.delete('/api/favorites/dishes/:id', ensureAuthenticated, async (req, res) =>
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error deleting favorite dish', error: error.message });
   }
+});
+
+// Recipe generation with GPT (mock atm)
+app.post('/api/recipes/suggest', ensureAuthenticated, async (req, res) => {
+  const { ingredients } = req.body;
+  if (!Array.isArray(ingredients) || ingredients.length === 0) {
+    return res.status(400).json({ success: false, message: "Ingredients array is required" });
+  }
+
+  // REPLACE WITH REAL GPT CALL
+  const mockRecipe = {
+    title: "Mock Pasta",
+    ingredientsUsed: ingredients,
+    instructions: "Boil pasta. Add mock ingredients. Serve hot.",
+    prepTime: "20 mins",
+  };
+
+  res.json({ success: true, recipe: mockRecipe });
 });
 
 // Start the backend server

@@ -30,7 +30,7 @@ export default function RecipesPage() {
     fetchRecipes();
   }, []);
 
-  function handleSearch(e) {
+  function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     fetchRecipes(searchTerm);
   }
