@@ -9,6 +9,7 @@ export default function RecipesPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Search by keyword
   async function fetchRecipes(query = "") {
     setLoading(true);
     setError(null);
@@ -30,6 +31,7 @@ export default function RecipesPage() {
     }
   }
 
+  // Suggestions based on logged ingredients
   async function fetchByIngredients() {
     setLoading(true);
     setError(null);
@@ -37,7 +39,7 @@ export default function RecipesPage() {
       const saved = localStorage.getItem("ingredients");
       const ingredients = saved ? JSON.parse(saved) : [];
 
-      if (ingredients.length === 0) {
+      if (!ingredients.length) {
         setError("No ingredients found. Please log your ingredients.");
         setRecipes([]);
         return;
@@ -64,7 +66,7 @@ export default function RecipesPage() {
         intersection = intersection.filter((m) => ids.has(m.idMeal));
       }
 
-      if (intersection.length === 0) {
+      if (!intersection.length) {
         setError("No recipes found for the given ingredients.");
         setRecipes([]);
       } else {
@@ -79,10 +81,12 @@ export default function RecipesPage() {
     }
   }
 
+  // On mount, load suggestions
   useEffect(() => {
     fetchByIngredients();
   }, []);
 
+  // Handle search submissions
   function handleSearch(e) {
     e.preventDefault();
     fetchRecipes(searchTerm);
@@ -146,7 +150,7 @@ export default function RecipesPage() {
           recipes.map((recipe) => (
             <Link
               key={recipe.idMeal}
-              href={`/recipe-browsing/${recipe.idMeal}`}
+              href={`/recipe/${recipe.idMeal}`}
               className="block hover:scale-105 transition-transform"
             >
               <div className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden">

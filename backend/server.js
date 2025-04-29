@@ -341,6 +341,24 @@ app.delete('/api/favorites/dishes/:id', ensureAuthenticated, async (req, res) =>
   }
 });
 
+// Recipe generation with GPT (mock atm)
+app.post('/api/recipes/suggest', ensureAuthenticated, async (req, res) => {
+  const { ingredients } = req.body;
+  if (!Array.isArray(ingredients) || ingredients.length === 0) {
+    return res.status(400).json({ success: false, message: "Ingredients array is required" });
+  }
+
+  // REPLACE WITH REAL GPT CALL
+  const mockRecipe = {
+    title: "Mock Pasta",
+    ingredientsUsed: ingredients,
+    instructions: "Boil pasta. Add mock ingredients. Serve hot.",
+    prepTime: "20 mins",
+  };
+
+  res.json({ success: true, recipe: mockRecipe });
+});
+
 // Start the backend server
 app.listen(PORT, () => {
   console.log(`Backend server listening on port ${PORT}`);
