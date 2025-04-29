@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export default function RecipesPage() {
   const [recipes, setRecipes] = useState([]);
@@ -38,7 +39,9 @@ export default function RecipesPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-blue-50 to-blue-200">
-        <h1 className="text-2xl font-bold text-blue-700">Loading recipes...</h1>
+        <h1 className="text-2xl font-bold text-blue-700">
+          Loading recipes...
+        </h1>
       </div>
     );
   }
@@ -64,7 +67,9 @@ export default function RecipesPage() {
       </nav>
 
       {/* Page Title */}
-      <h2 className="text-3xl font-bold text-blue-700 text-center mt-8 mb-4">Browse Recipes</h2>
+      <h2 className="text-3xl font-bold text-blue-700 text-center mt-8 mb-4">
+        Browse Recipes
+      </h2>
 
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="flex justify-center mb-8">
@@ -87,27 +92,22 @@ export default function RecipesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {recipes.length > 0 ? (
           recipes.map((recipe) => (
-            <div
-              key={recipe.idMeal || recipe.strMeal}
-              className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden"
-            >
-              <img
-                src={recipe.strMealThumb}
-                alt={recipe.strMeal}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
-                <p className="text-gray-600">
-                  {recipe.strArea} - {recipe.strCategory}
-                </p>
-                {recipe.strInstructions && (
-                  <p className="text-gray-500 mt-2 overflow-hidden text-ellipsis whitespace-nowrap">
-                    {recipe.strInstructions}
-                  </p>
-                )}
+            <Link key={recipe.idMeal} href={`/recipe-browsing/${recipe.idMeal}`} className="block hover:scale-105 transition-transform">
+              <div className="bg-white bg-opacity-70 backdrop-blur-lg rounded-xl shadow-xl overflow-hidden">
+                <img
+                  src={recipe.strMealThumb}
+                  alt={recipe.strMeal}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-blue-700">{recipe.strMeal}</h3>
+                  <p className="text-gray-600">{recipe.strArea} - {recipe.strCategory}</p>
+                  {recipe.strInstructions && (
+                    <p className="text-gray-500 mt-2 line-clamp-3">{recipe.strInstructions}</p>
+                  )}
+                </div>
               </div>
-            </div>
+            </Link>
           ))
         ) : (
           <p className="text-center text-gray-600 col-span-full">No recipes found.</p>
