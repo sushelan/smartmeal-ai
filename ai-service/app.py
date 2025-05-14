@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 from meal_gen import generate_meal  # Importing the meal generation logic
 
 app = Flask(__name__)
+# allow cookies/sessions too
+CORS(app, supports_credentials=True)
 
 @app.route('/generate-meal-plan', methods=['POST'])
 def generate_meal_plan():
@@ -14,4 +18,4 @@ def generate_meal_plan():
     return jsonify(dishes)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5002)
