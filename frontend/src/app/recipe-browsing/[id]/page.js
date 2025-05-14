@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function RecipeDetail() {
+  const AI_URL = "http://localhost:5002";
+  const BACKEND_URL = "http://localhost:5001"
   const router = useRouter();
   const path = usePathname(); // e.g. "/recipe-browsing/52772"
   const id = path.split("/").pop();
@@ -43,19 +45,37 @@ export default function RecipeDetail() {
   }
 
   async function handleGenerate() {
+    console.log("🔍 handleGenerate() invoked, AI_URL =", AI_URL);
     setGenerating(true);
     try {
+      console.log("📤 Sending POST to", `${AI_URL}/generate-meal-plan`);
       // 1) load user's saved ingredients
-      const favRes = await fetch("/api/favorites/ingredients", {
-        credentials: "include",
-      });
+      /*
+      const favRes = await fetch(
+        `${BACKEND_URL}/api/favorites/ingredients`,
+        {
+          method: "GET",
+          mode: "cors",
+          credentials: "include"
+        }
+      );
+      if (!favRes.ok) {
+        const body = await favRes.text();
+        console.error("⚠️ favorites fetch error", favRes.status, body);
+        throw new Error("Could not load favorites");
+      }
+      console.log("👍 Favorites fetched:", favRes.status);
       const { favorites } = await favRes.json();
       const ingredientsOnHand = favorites.map((f) => f.ingredient);
-
+      */
+      const ingredientsOnHand = getIngredients(recipe);
       // 2) call your Flask microservice
-      const genRes = await fetch("http://localhost:5001/generate-meal-plan", {
+      console.log("Generating from AI at:", AI_URL + "/generate-meal-plan");
+      const genRes = await fetch(`${AI_URL}/generate-meal-plan`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        mode: "cors",
+        credentials: "include",
         body: JSON.stringify({
           preferences: {
             favorite_cuisines: [recipe.strArea],
@@ -66,6 +86,7 @@ export default function RecipeDetail() {
           query: ingredientsOnHand.join(", "),
         }),
       });
+      console.log("📥 AI response status:", genRes.status);
       const data = await genRes.json();
       setSuggestion(data[0]);
     } catch (err) {

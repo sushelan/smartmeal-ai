@@ -34,7 +34,7 @@ For example:
     "cuisine": "Mexican",
     "ingredients": ["tortillas", "chicken", "cheese", "salsa"],
     "description": "A classic Mexican dish with a spicy kick."
-  }},
+  }}
 ]
 
 Now, based on the query: "{query}", generate the JSON array.
