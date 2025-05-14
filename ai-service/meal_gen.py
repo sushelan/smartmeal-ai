@@ -38,6 +38,7 @@ For example:
 ]
 
 Now, based on the query: "{query}", generate the JSON array.
+Make sure the dish shares the same style but uses at least two ingredients not listed in the query, and does not repeat every single ingredient exactly.
 """
     try:
         response = client.chat.completions.create(
@@ -49,7 +50,7 @@ Now, based on the query: "{query}", generate the JSON array.
                 },
                 {"role": "user", "content": prompt}
             ],
-            temperature=0.7,
+            temperature=0.9,
             max_tokens=500
         )
         output = response.choices[0].message.content.strip()

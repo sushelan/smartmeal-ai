@@ -152,15 +152,15 @@ export default function RecipeDetail() {
         </button>
 
         {suggestion && (
-          <div className="mt-8 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <h3 className="text-xl font-bold">{suggestion.name}</h3>
-            <p className="italic">{suggestion.cuisine}</p>
+          <div className="mt-8 p-6 bg-card border border-gray-200 rounded-2xl shadow-sm">
+            <h3 className="text-2xl font-semibold text-gray-900 mb-2">{suggestion.name}</h3>
+            <p className="italic text-gray-700 mb-4">{suggestion.cuisine}</p>
             <ul className="mt-2 list-disc list-inside">
-              {suggestion.ingredients.map((i, idx) => (
-                <li key={idx}>{i}</li>
-              ))}
+            {suggestion.ingredients.map((i, idx) => (
+              <li key={idx} className="text-gray-700">{i}</li>
+            ))}
             </ul>
-            <p className="mt-2">{suggestion.description}</p>
+            <p className="text-gray-700 leading-relaxed">{suggestion.description}</p>
           </div>
         )}
       </div>
