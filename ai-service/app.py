@@ -5,7 +5,12 @@ from meal_gen import generate_meal  # Importing the meal generation logic
 
 app = Flask(__name__)
 # allow cookies/sessions too
-CORS(app, supports_credentials=True)
+CORS(
+    app,
+    supports_credentials=True,
+    origins=["http://localhost:3000"],
+    resources={r"/*": {"origins": "http://localhost:3000"}}
+)
 
 @app.route('/generate-meal-plan', methods=['POST'])
 def generate_meal_plan():
