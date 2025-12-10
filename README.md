@@ -31,7 +31,7 @@ Stores user accounts, food logs, and timestamps. Queried by the backend for all 
 # Developers
 **Sanjay** – Frontend (UI, recipe browsing, log-food page)
 
-**Sushanth** – Frontend (styling, interactions, integration)
+**Sushanth** – Frontend & Backend (styling, interactions, routes, DB)
 
 **Amogh** – Backend (routes, DB queries, session handling)
 
